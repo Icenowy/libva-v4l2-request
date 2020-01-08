@@ -156,11 +156,15 @@ static VAStatus copy_surface_to_image (struct request_data *driver_data,
 
 	for (i = 0; i < surface_object->destination_planes_count; i++) {
 		if (!video_format_is_linear(driver_data->video_format))
+#ifdef __arm__
 			tiled_to_planar(surface_object->destination_data[i],
 					buffer_object->data + image->offsets[i],
 					image->pitches[i], image->width,
 					i == 0 ? image->height :
 						 image->height / 2);
+#else
+			return VA_STATUS_ERROR_INVALID_VALUE;
+#endif
 		else {
 			memcpy(buffer_object->data + image->offsets[i],
 			       surface_object->destination_data[i],
